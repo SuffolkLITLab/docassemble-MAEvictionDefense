@@ -2,7 +2,7 @@ import gspread
 import json
 from docassemble.base.util import get_config
 from oauth2client.service_account import ServiceAccountCredentials
-credential_info = json.loads(get_config('google').get('service account credentials'), strict=False)
+credential_info = json.loads(get_config('google').get('service account credentials', "{}"), strict=False)
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 import usaddress
