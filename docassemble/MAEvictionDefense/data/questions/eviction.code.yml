@@ -207,8 +207,8 @@ code: |
 comment: |
   Initial defenses
 ---
-sets: 
-  - initial_defense.no_proper_termination
+sets:
+  - initial_defense.ntq_defective
   - initial_defense.need_ntq
 code: |
   tenant_type = 'renter'
@@ -218,12 +218,14 @@ code: |
     tenant_type = 'pfc_owner'
 
   initial_defense.ntq_defective = not (ntq_includes_tenant_name and ntq_includes_all_tenants and ntq_includes_correct_address) or ntq_leaves_off_required_language
-  
   if tenant_type == 'renter' and tenancy_type == 'lease':
     initial_defense.need_ntq = not (lease_type == 'fixed_term' and lease_end_date <= date_received_summons) and not (tenancy_type == 'pca')
   else:
     initial_defense.need_ntq = True
-
+---
+sets:
+  - initial_defense.improper_time_given
+code: |
   # Check to see if the right type of notice was used to match the type of tenancy and basis for termination
   if notice_type == 'fourteen_day':
     initial_defense.improper_time_given = (not behind_in_rent) or lease_requires_30_day_notice or (refused_rent_increase)
@@ -235,7 +237,10 @@ code: |
     initial_defense.improper_time_given = False
   else:
     initial_defense.improper_time_given = True
-  
+---
+sets:
+  - initial_defense.no_proper_termination
+code: |
   # Tenancy improperly terminated if wrong notice type or defective notice
   # We're only checking some common scenarios
   initial_defense.no_proper_termination = (initial_defense.ntq_defective or initial_defense.improper_time_given or (initial_defense.need_ntq and initial_defense.no_ntq))
